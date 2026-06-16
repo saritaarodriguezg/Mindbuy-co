@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindBuy — Consumo Consciente</title>
+  <link rel="icon" type="image/png" href="mindbuy-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- SVG ICON DEFINITIONS (hidden, reusable via <use>) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <!-- Leaf / theme toggle -->
+    <symbol id="icon-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7z"/>
+      <path d="M11 20V9"/>
+    </symbol>
+    <!-- Orbit / moon for dark mode -->
+    <symbol id="icon-orbit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/>
+    </symbol>
+    <!-- CO2 molecule -->
+    <symbol id="icon-co2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="2"/>
+      <circle cx="5" cy="12" r="2.5"/>
+      <circle cx="19" cy="12" r="2.5"/>
+      <line x1="7.5" y1="12" x2="10" y2="12"/>
+      <line x1="14" y1="12" x2="16.5" y2="12"/>
+    </symbol>
+    <!-- Water drop -->
+    <symbol id="icon-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2L5.5 10.5a7 7 0 1 0 13 0L12 2z"/>
+    </symbol>
+    <!-- Exchange / swap -->
+    <symbol id="icon-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 16V4m0 0L3 8m4-4l4 4"/>
+      <path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+    </symbol>
+    <!-- Second hand tag -->
+    <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L4 14V4h10l6.59 6.59a2 2 0 0 1 0 2.82z"/>
+      <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/>
+    </symbol>
+    <!-- Repair / wrench -->
+    <symbol id="icon-repair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+    </symbol>
+    <!-- Library / book -->
+    <symbol id="icon-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </symbol>
+    <!-- Close X -->
+    <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </symbol>
+    <!-- Check -->
+    <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+    <!-- Warning triangle -->
+    <symbol id="icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </symbol>
+    <!-- Chart / progress -->
+    <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/>
+    </symbol>
+    <!-- Cart -->
+    <symbol id="icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="21" r="1"/>
+      <circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </symbol>
+    <!-- Trophy -->
+    <symbol id="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9H3V4h3M18 9h3V4h-3M6 9v5a6 6 0 0 0 12 0V9H6z"/>
+      <path d="M12 20v2M9 22h6"/>
+    </symbol>
+    <!-- Brain / mind -->
+    <symbol id="icon-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v.5H6a2 2 0 0 0-2 2v.5A2.5 2.5 0 0 0 2 10v1a2.5 2.5 0 0 0 2.5 2.5A2.5 2.5 0 0 0 7 16v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1a2.5 2.5 0 0 0 2.5-2.5V10a2.5 2.5 0 0 0-2-2.45V6a2 2 0 0 0-2-2h-1v-.5A2.5 2.5 0 0 0 14.5 2h-5z"/>
+    </symbol>
+    <!-- Chat bubble -->
+    <symbol id="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </symbol>
+    <!-- Planet / globe -->
+    <symbol id="icon-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </symbol>
+    <!-- Send arrow -->
+    <symbol id="icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13"/>
+      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </symbol>
+    <!-- Clock / cooling -->
+    <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </symbol>
+    <!-- Star -->
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </symbol>
+    <!-- Star outline -->
+    <symbol id="icon-star-o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </symbol>
+    <!-- Refresh -->
+    <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"/>
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+    </symbol>
+    <!-- Shield -->
+    <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </symbol>
+    <!-- Target -->
+    <symbol id="icon-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </symbol>
+    <!-- Film camera -->
+    <symbol id="icon-film" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="7" width="15" height="10" rx="2"/>
+      <polyline points="17 11 22 7 22 17 17 13"/>
+    </symbol>
+    <!-- User -->
+    <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </symbol>
+    <!-- Lightning bolt (impulsive) -->
+    <symbol id="icon-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </symbol>
+    <!-- Checklist (planned) -->
+    <symbol id="icon-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6"/>
+      <line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/>
+      <line x1="3" y1="6" x2="3.01" y2="6"/>
+      <line x1="3" y1="12" x2="3.01" y2="12"/>
+      <line x1="3" y1="18" x2="3.01" y2="18"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="loading">
+  <div class="load-wordmark">MindBuy</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════ -->
+<div id="view-login" class="view">
+  <div class="auth-layout">
+    <div class="auth-panel">
+      <div class="auth-panel-bg"></div>
+      <div class="auth-panel-texture"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-eyebrow">
+          <svg width="14" height="14"><use href="#icon-leaf"/></svg>
+          Consumo Consciente
+        </div>
+        <h2 class="auth-panel-headline">Consume con<br/>intención,<br/>vive mejor.</h2>
+        <p class="auth-panel-sub">MindBuy te ayuda a entender tus patrones de consumo y descubrir alternativas verdaderamente sostenibles.</p>
+        <div class="auth-features">
+          <div class="auth-feat">Rastrea tu huella de carbono en compras</div>
+          <div class="auth-feat">Quiz personalizado de hábitos de consumo</div>
+          <div class="auth-feat">Registro de compras y metas sostenibles</div>
+          <div class="auth-feat">Guía de marcas éticas y alternativas</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-logo-wrap">
+        <img src="mindbuy-logo.png" alt="MindBuy" class="auth-logo-img"
+          onerror="this.outerHTML='<div class=auth-wordmark-fallback>MindBuy</div>'"/>
+      </div>
+      <h1 class="auth-form-title">Bienvenido de vuelta</h1>
+      <p class="auth-form-sub">Inicia sesión para continuar tu viaje hacia un consumo más consciente.</p>
+      <div class="form-stack">
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com"/></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="login-password" placeholder="••••••••"/></div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-full btn-lg" id="btn-login">Iniciar sesión</button>
+          <div class="divider">o</div>
+          <button class="btn btn-outline btn-full" id="btn-go-register">Crear cuenta nueva</button>
+        </div>
+      </div>
+      <button class="dev-bypass" id="btn-dev-bypass">Acceso directo — Modo demostración</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     REGISTER
+═══════════════════════════════════════ -->
+<div id="view-register" class="view">
+  <div class="auth-layout">
+    <div class="auth-panel">
+      <div class="auth-panel-bg"></div>
+      <div class="auth-panel-texture"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-eyebrow">
+          <svg width="14" height="14"><use href="#icon-leaf"/></svg>
+          Únete a la comunidad
+        </div>
+        <h2 class="auth-panel-headline">Tu viaje hacia<br/>el consumo<br/>consciente.</h2>
+        <p class="auth-panel-sub">Registra tus hábitos, fíjate metas y descubre qué tan sostenibles son tus decisiones de compra.</p>
+        <div class="auth-features">
+          <div class="auth-feat">Análisis personalizado de tus hábitos</div>
+          <div class="auth-feat">Tracker de compras conscientes</div>
+          <div class="auth-feat">Metas de consumo con seguimiento</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-logo-wrap">
+        <img src="mindbuy-logo.png" alt="MindBuy" class="auth-logo-img"
+          onerror="this.outerHTML='<div class=auth-wordmark-fallback>MindBuy</div>'"/>
+      </div>
+      <h1 class="auth-form-title">Crear cuenta</h1>
+      <p class="auth-form-sub">Es gratis y toma menos de 2 minutos.</p>
+      <div class="form-stack">
+        <div class="field"><label>Nombre Completo</label><input type="text" id="reg-name" placeholder="Tu nombre completo"/></div>
+        <div class="field"><label>Ocupación</label>
+          <select id="reg-occupation">
+            <option value="">Seleccionar…</option>
+            <option>Estudiante</option>
+            <option>Profesional independiente</option>
+            <option>Empleado</option>
+            <option>Emprendedor</option>
+            <option>Docente / Investigador</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com"/></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="reg-password" placeholder="Mínimo 8 caracteres"/></div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-full btn-lg" id="btn-register">Crear mi cuenta</button>
+        </div>
+      </div>
+      <p class="form-footer">¿Ya tienes cuenta? <button onclick="showView('login')">Iniciar sesión</button></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+<nav class="navbar" id="main-nav" style="display:none">
+  <div class="nav-brand" onclick="showView('dashboard')">
+    <img src="mindbuy-logo.png" alt="MindBuy" class="nav-logo"
+      onerror="this.style.display='none'"/>
+    <span class="nav-wordmark">MindBuy</span>
+  </div>
+  <ul class="nav-links" id="nav-links">
+    <li class="nav-link active" data-view="dashboard">Inicio</li>
+    <li class="nav-link" data-view="tracker">Mis Compras</li>
+    <li class="nav-link" data-view="goals">Metas</li>
+    <li class="nav-link" data-view="quiz">Evaluación</li>
+    <li class="nav-link" data-view="guide">Alternativas</li>
+    <li class="nav-link" data-view="progress">Progreso e IA</li>
+    <li class="nav-link" data-view="awareness">Concientización</li>
+    <li class="nav-link" data-view="about">Quiénes Somos</li>
+  </ul>
+  <div class="nav-user">
+    <button class="btn-theme-toggle" id="btn-theme" title="Alternar modo oscuro">
+      <svg width="18" height="18" class="icon-light"><use href="#icon-leaf"/></svg>
+      <svg width="18" height="18" class="icon-dark"><use href="#icon-orbit"/></svg>
+    </button>
+    <span class="nav-uname" id="nav-username"></span>
+    <div class="avatar" id="nav-avatar">?</div>
+    <button class="btn btn-ghost btn-sm" id="btn-logout">Salir</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════ -->
+<div id="view-dashboard" class="view">
+
+  <!-- HORIZONTAL HERO -->
+  <div class="horizontal-hero-wrap">
+    <div class="bands-fixed" id="bands-fixed">
+      <div class="band-label active-band" data-panel="0"><span>Nosotros</span></div>
+      <div class="band-label" data-panel="1"><span>Historia</span></div>
+      <div class="band-label" data-panel="2"><span>Impacto</span></div>
+      <div class="band-label" data-panel="3"><span>Marcas</span></div>
+      <div class="band-label" data-panel="4"><span>El Mundo</span></div>
+    </div>
+    <div class="horizontal-panels" id="horizontal-panels">
+      <div class="h-panel in-view" data-index="0">
+        <img class="h-panel-img" src="monstera 5.jpg" alt="Nosotros"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Quiénes somos</p>
+          <h2 class="h-panel-title">Noso<br/>tros</h2>
+          <p class="h-panel-desc">Transformamos hábitos en arte. Con la idea de llegar al corazón y quedarnos en la mente, te guiamos hacia un consumo que cuida el planeta.</p>
+          <div class="h-panel-cta" onclick="showView('quiz');initQuiz()">Hacer mi evaluación</div>
+        </div>
+      </div>
+      <div class="h-panel" data-index="1">
+        <img class="h-panel-img" src="underconsumption 3.jpg" alt="Historia"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestra historia</p>
+          <h2 class="h-panel-title">Histo<br/>ria</h2>
+          <p class="h-panel-desc">Somos una herramienta creada por jóvenes que creen que vivir de forma sostenible no es una restricción, sino una forma de libertad.</p>
+          <div class="h-panel-cta" onclick="showView('tracker')">Ver mis compras</div>
+        </div>
+      </div>
+      <div class="h-panel" data-index="2">
+        <img class="h-panel-img" src="plantinh.jpg" alt="Impacto"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestro impacto</p>
+          <h2 class="h-panel-title">Impac<br/>to</h2>
+          <p class="h-panel-desc">Estamos movidos por el deseo de actuar e inspirar a otros. Cada compra consciente es una historia de transformación real.</p>
+          <div class="h-panel-cta" onclick="showView('goals')">Mis metas</div>
+        </div>
+      </div>
+      <div class="h-panel" data-index="3">
+        <img class="h-panel-img" src="https://images.unsplash.com/photo-1523381294911-8d3cead13475?q=80&w=1600&auto=format&fit=crop" alt="Marcas"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Nuestras marcas</p>
+          <h2 class="h-panel-title">Nues<br/>tras<br/>Marcas</h2>
+          <p class="h-panel-desc">En cada alternativa que te mostramos se refleja el compromiso con experiencias de consumo únicas y transformadoras.</p>
+          <div class="h-panel-cta" onclick="showView('guide')">Ver alternativas</div>
+        </div>
+      </div>
+      <div class="h-panel" data-index="4">
+        <img class="h-panel-img" src="underconsumption 2.jpg" alt="En el Mundo"/>
+        <div class="h-panel-overlay"></div>
+        <div class="h-panel-content">
+          <p class="h-panel-eyebrow">Alcance nacional</p>
+          <h2 class="h-panel-title">En el<br/>Mundo</h2>
+          <p class="h-panel-desc">Construimos conexiones significativas con personas que, así como tú, eligen consumir con conciencia.</p>
+          <div class="h-panel-cta" onclick="showView('quiz');initQuiz()">Comenzar</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Deslizar</span>
+      <div class="scroll-track"><div class="scroll-thumb" id="scroll-thumb"></div></div>
+      <span>→</span>
+    </div>
+  </div>
+
+  <!-- VIDEO SECTION -->
+  <div class="video-section" style="margin-top:70px">
+    <div class="video-card">
+      <div class="video-info">
+        <div class="video-tag">
+          <svg width="13" height="13"><use href="#icon-film"/></svg>
+          Vídeo Introductorio
+        </div>
+        <h2 class="video-title">¿Sabes el verdadero costo de lo que compras?</h2>
+        <p class="video-desc"><em>El sobreconsumo</em> y la impulsividad al adquirir moda rápida ocultan una cadena de consecuencias humanas y ambientales que raramente vemos.</p>
+        <div class="video-pills">
+          <span class="video-pill">
+            <svg width="11" height="11"><use href="#icon-globe"/></svg>
+            Conoce el impacto
+          </span>
+          <span class="video-pill">
+            <svg width="11" height="11"><use href="#icon-leaf"/></svg>
+            Medio ambiente
+          </span>
+          <span class="video-pill">Sarah Guerra, 2026</span>
+        </div>
+      </div>
+      <div class="video-embed">
+        <video src="Video Introductorio Mindbuyy.mp4" controls preload="metadata" poster="mindbuy-logo.png"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT SECTION (inline on dashboard) -->
+  <div class="about-section">
+    <div class="about-card">
+      <div class="about-inner">
+        <div class="about-left">
+          <div>
+            <div class="about-wordmark">MindBuy</div>
+            <div class="about-sub">Consumo Consciente</div>
+          </div>
+          <p class="about-tagline">"Una herramienta que te ayuda a pausar, reflexionar y decidir antes de comprar."</p>
+          <div class="about-gallery">
+            <img src="monstera 1.jpg" alt="Plantita"/>
+            <img src="stop it.jpg" alt="Stop"/>
+            <img src="recylce.jpg" alt="Reciclar"/>
+          </div>
+          <div class="about-stats-mini">
+            <div class="asm-item">
+              <div class="asm-val">72h</div>
+              <div class="asm-label">Período de reflexión recomendado antes de una compra impulsiva</div>
+            </div>
+            <div class="asm-item">
+              <div class="asm-val">64%</div>
+              <div class="asm-label">de compras impulsivas no se realizan tras esperar 48 horas</div>
+            </div>
+            <div class="asm-item">
+              <div class="asm-val">10%</div>
+              <div class="asm-label">de emisiones globales de CO₂ provienen del fast fashion</div>
+            </div>
+          </div>
+        </div>
+        <div class="about-right">
+          <p class="about-eyebrow">¿Qué es MindBuy?</p>
+          <h3 class="about-headline">Una app para combatir el sobreconsumo digital, una compra a la vez</h3>
+          <p class="about-body">MindBuy nace de una pregunta simple: ¿Realmente necesito esto? En un mundo donde plataformas como Shein y Temu están diseñadas para que compremos impulsivamente, MindBuy te da las herramientas para recuperar el control de tus decisiones de consumo.<br/><br/>Nuestra misión es combinar psicología del consumo, datos de sostenibilidad y diseño intuitivo para ayudarte a vivir con más intención y menos remordimiento de comprador.</p>
+          <div class="about-feats">
+            <div class="about-feat">
+              <div class="af-icon"><svg width="18" height="18"><use href="#icon-clock"/></svg></div>
+              <div><p class="af-title">Lista de reflexión</p><p class="af-desc">Agrega artículos y espera 72h antes de decidir si comprar.</p></div>
+            </div>
+            <div class="about-feat">
+              <div class="af-icon"><svg width="18" height="18"><use href="#icon-chart"/></svg></div>
+              <div><p class="af-title">Tracker de compras</p><p class="af-desc">Registra y clasifica: necesaria, planeada o impulsiva.</p></div>
+            </div>
+            <div class="about-feat">
+              <div class="af-icon"><svg width="18" height="18"><use href="#icon-brain"/></svg></div>
+              <div><p class="af-title">Evaluación de hábitos</p><p class="af-desc">12 preguntas que revelan tu perfil real de consumo digital.</p></div>
+            </div>
+            <div class="about-feat">
+              <div class="af-icon"><svg width="18" height="18"><use href="#icon-leaf"/></svg></div>
+              <div><p class="af-title">Alternativas éticas</p><p class="af-desc">Guía de marcas sostenibles verificadas por categoría.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWS SECTION -->
+  <div class="news-section" style="margin-top:32px">
+    <div class="news-header">
+      <div>
+        <p class="news-hl-eyebrow">Lo que pasa en el mundo</p>
+        <h2 class="news-hl-title">Noticias del Medio Ambiente y Consumo</h2>
+      </div>
+      <div class="news-live">En vivo</div>
+    </div>
+    <div class="news-tabs" id="news-tabs">
+      <button class="news-tab active" data-feed="env">Medio ambiente</button>
+      <button class="news-tab" data-feed="fashion">Moda sostenible</button>
+      <button class="news-tab" data-feed="eco">Economía circular</button>
+    </div>
+    <div id="news-container"><div class="news-loading"><div class="nl-ring"></div><p style="font-size:.84rem">Cargando noticias…</p></div></div>
+  </div>
+
+  <!-- DASH GRID -->
+  <div class="dash-grid">
+    <div>
+      <p class="sec-eyebrow">¿Sabías que…?</p>
+      <p class="sec-title">Datos que cambian perspectivas</p>
+      <div class="fact-slider">
+        <div class="fact-slides-wrap">
+          <div class="fact-slides" id="fact-slides">
+            <div class="fact-slide"><div class="fact-num">Dato 01</div><p class="fact-text">La industria de la moda rápida es responsable del 10% de las emisiones mundiales de carbono.</p><p class="fact-source">— UNEP, 2023</p></div>
+            <div class="fact-slide"><div class="fact-num">Dato 02</div><p class="fact-text">El colombiano promedio devuelve el 30% de lo que compra online, generando más emisiones que la compra misma.</p><p class="fact-source">— MinCIT Colombia, 2023</p></div>
+            <div class="fact-slide"><div class="fact-num">Dato 03</div><p class="fact-text">Comprar una prenda de segunda mano reduce su huella de carbono hasta un 82% comparado con una nueva.</p><p class="fact-source">— ThredUp Impact Report, 2022</p></div>
+            <div class="fact-slide"><div class="fact-num">Dato 04</div><p class="fact-text">El 73% de los consumidores millennials paga más por productos de marcas sostenibles si confían en ellas.</p><p class="fact-source">— Nielsen Global Survey, 2023</p></div>
+            <div class="fact-slide"><div class="fact-num">Dato 05</div><p class="fact-text">Esperar 48 horas antes de una compra impulsiva reduce la probabilidad de realizarla en un 64%.</p><p class="fact-source">— Journal of Consumer Psychology, 2021</p></div>
+          </div>
+        </div>
+        <div class="fact-controls">
+          <div class="fact-dots" id="fact-dots"></div>
+          <div class="fact-arrows">
+            <div class="fact-arrow" id="fact-prev">←</div>
+            <div class="fact-arrow" id="fact-next">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="sec-eyebrow">Cómo funciona</p>
+      <p class="sec-title">Tu camino hacia el consumo consciente</p>
+      <div class="card"><div class="card-body">
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">1</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Regístrate y conoce tu perfil</p><p class="tl-desc">Crea tu cuenta y descubre cómo son tus hábitos actuales de consumo digital.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">2</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Completa la evaluación</p><p class="tl-desc">12 preguntas que analizan tu relación con las compras online y la sostenibilidad.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">3</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Registra tus compras</p><p class="tl-desc">Lleva un diario de tus compras y clasifícalas para entender tus patrones reales.</p></div></div>
+          <div class="tl-item"><div class="tl-left"><div class="tl-dot">4</div><div class="tl-line"></div></div><div class="tl-content"><p class="tl-title">Fíjate metas y mide tu progreso</p><p class="tl-desc">Establece compromisos sostenibles y celebra cada avance.</p></div></div>
+        </div>
+      </div></div>
+    </div>
+    <div>
+      <p class="sec-eyebrow">Acción inmediata</p>
+      <p class="sec-title">¿Por dónde empezar?</p>
+      <div class="cta-card" style="margin-bottom:13px">
+        <div class="cta-icon"><svg width="32" height="32"><use href="#icon-brain"/></svg></div>
+        <div><h3>Evaluación de Hábitos</h3><p>12 preguntas que analizan tus patrones de compra digital. Toma 3 minutos.</p><div class="cta-actions"><button class="btn btn-primary btn-sm" onclick="showView('quiz');initQuiz()">Comenzar</button></div></div>
+      </div>
+      <div class="cta-card">
+        <div class="cta-icon"><svg width="32" height="32"><use href="#icon-cart"/></svg></div>
+        <div><h3>Registrar una compra</h3><p>Anota tu última compra y clasifícala para empezar tu diario.</p><div class="cta-actions"><button class="btn btn-outline btn-sm" onclick="showView('tracker')">Ir al tracker</button></div></div>
+      </div>
+    </div>
+    <div>
+      <p class="sec-eyebrow">Alternativas sostenibles</p>
+      <p class="sec-title">Marcas que cuidan el planeta</p>
+      <div class="alt-grid">
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-leaf"/></svg></div>
+          <p class="alt-name">Patagonia</p><p class="alt-cat">Outdoor sostenible</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-leaf"/></svg></div>
+          <p class="alt-name">Allbirds</p><p class="alt-cat">Mínima huella</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-tag"/></svg></div>
+          <p class="alt-name">ThredUp</p><p class="alt-cat">Segunda mano</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-globe"/></svg></div>
+          <p class="alt-name">Tentree</p><p class="alt-cat">10 árboles / compra</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-swap"/></svg></div>
+          <p class="alt-name">Vinted</p><p class="alt-cat">Intercambio ropa</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-shield"/></svg></div>
+          <p class="alt-name">Lush</p><p class="alt-cat">Sin plástico</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-repair"/></svg></div>
+          <p class="alt-name">Back Market</p><p class="alt-cat">Tech reacond.</p>
+        </div>
+        <div class="alt-card" onclick="showView('guide')">
+          <div class="alt-icon"><svg width="22" height="22"><use href="#icon-library"/></svg></div>
+          <p class="alt-name">Eileen Fisher</p><p class="alt-cat">Moda atemporal</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid-bg"></div>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-wordmark">MindBuy</div>
+        <p class="footer-sub">Consumo Consciente &copy; 2026</p>
+      </div>
+      <div class="footer-actions">
+        <button class="btn btn-outline btn-sm footer-btn" onclick="showView('quiz');initQuiz()">Hacer la evaluación</button>
+        <button class="btn btn-outline btn-sm footer-btn" onclick="showView('guide')">Ver alternativas</button>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TRACKER
+═══════════════════════════════════════ -->
+<div id="view-tracker" class="view">
+  <div class="page-hero">
+    <h1>Mis Compras</h1>
+    <p>Registra y clasifica tus compras para entender tus patrones de consumo.</p>
+  </div>
+  <div class="tracker-layout">
+    <!-- Environmental Impact Panel -->
+    <div class="env-impact-panel" id="env-impact-panel">
+      <div class="env-impact-title">Impacto Ambiental Estimado (compras impulsivas evitadas)</div>
+      <div class="env-impact-grid">
+        <div class="env-metric">
+          <div class="env-metric-icon">
+            <svg width="24" height="24"><use href="#icon-co2"/></svg>
+          </div>
+          <div>
+            <div class="env-metric-val" id="env-co2">0 kg</div>
+            <div class="env-metric-label">CO₂ evitado</div>
+          </div>
+        </div>
+        <div class="env-metric">
+          <div class="env-metric-icon">
+            <svg width="24" height="24"><use href="#icon-drop"/></svg>
+          </div>
+          <div>
+            <div class="env-metric-val" id="env-water">0 L</div>
+            <div class="env-metric-label">Agua preservada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tracker-summary">
+      <div class="ts-card"><div class="ts-val" id="ts-total">$0</div><div class="ts-label">Total registrado</div></div>
+      <div class="ts-card"><div class="ts-val" id="ts-impulsiva">0</div><div class="ts-label">Compras impulsivas</div></div>
+      <div class="ts-card"><div class="ts-val" id="ts-count">0</div><div class="ts-label">Registradas</div></div>
+    </div>
+
+    <div class="tracker-form-card">
+      <p class="sec-eyebrow">Nueva compra</p>
+      <p class="sec-title" style="margin-bottom:0">Registrar compra</p>
+      <div class="tracker-form-grid">
+        <div class="field"><label>Producto</label><input type="text" id="tr-product" placeholder="Ej: Camiseta SHEIN"/></div>
+        <div class="field"><label>Monto (COP)</label><input type="number" id="tr-amount" placeholder="0" min="0"/></div>
+        <div class="field"><label>Tipo</label>
+          <select id="tr-type">
+            <option value="necesaria">Necesaria</option>
+            <option value="planeada">Planeada</option>
+            <option value="impulsiva">Impulsiva</option>
+          </select>
+        </div>
+        <div class="field"><label>Categoría</label>
+          <select id="tr-category">
+            <option value="ropa">Ropa</option>
+            <option value="electronica">Electrónica</option>
+            <option value="alimentos">Alimentos</option>
+            <option value="ocio">Ocio</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn btn-primary btn-full" id="btn-add-purchase">Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="sec-eyebrow" style="margin-bottom:12px">Historial de compras</p>
+    <div class="purchase-list" id="purchase-list">
+      <div class="empty-state">
+        <div class="empty-icon"><svg width="36" height="36"><use href="#icon-cart"/></svg></div>
+        <p class="empty-title">Aún no hay compras registradas</p>
+        <p class="empty-sub">Registra tu primera compra arriba para empezar a rastrear tus hábitos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GOALS
+═══════════════════════════════════════ -->
+<div id="view-goals" class="view">
+  <div class="page-hero"><h1>Mis Metas</h1><p>Define compromisos hacia un consumo más consciente y mide tu avance.</p></div>
+  <div class="goals-layout">
+    <div class="goal-add-card">
+      <p class="sec-eyebrow">Nueva meta</p>
+      <p class="sec-title" style="margin-bottom:0">Crear compromiso</p>
+      <div class="goal-form-grid">
+        <div class="field"><label>Título de la meta</label><input type="text" id="goal-title" placeholder="Ej: No comprar fast fashion en 30 días"/></div>
+        <div class="field"><label>Categoría</label>
+          <select id="goal-category">
+            <option value="consumo">Consumo</option>
+            <option value="presupuesto">Presupuesto</option>
+            <option value="sostenibilidad">Sostenibilidad</option>
+            <option value="habitos">Hábitos</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:span 2"><label>Descripción</label><input type="text" id="goal-desc" placeholder="Describe cómo vas a lograr esta meta…"/></div>
+      </div>
+      <button class="btn btn-primary mt-4" id="btn-add-goal">Agregar meta</button>
+    </div>
+    <p class="sec-eyebrow" style="margin-bottom:12px">Compromisos activos</p>
+    <div id="goals-list">
+      <div class="goal-card" data-id="g0">
+        <div class="goal-header"><div><p class="goal-title">Evitar compras en SHEIN o Temu por 30 días</p><p class="goal-desc">Explorar alternativas de segunda mano como Vinted antes de recurrir al fast fashion.</p></div><span class="goal-status status-active">Activa</span></div>
+        <div class="progress"><div class="progress-fill" style="width:45%"></div></div>
+        <div class="goal-footer"><span class="goal-pct">45% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this,'g0')">Marcar como lograda</button></div>
+      </div>
+      <div class="goal-card" data-id="g1">
+        <div class="goal-header"><div><p class="goal-title">Registrar todas mis compras durante un mes</p><p class="goal-desc">Anotar cada compra online, sin importar el monto.</p></div><span class="goal-status status-active">Activa</span></div>
+        <div class="progress"><div class="progress-fill" style="width:70%"></div></div>
+        <div class="goal-footer"><span class="goal-pct">70% completado</span><button class="btn btn-sm btn-outline" onclick="toggleGoal(this,'g1')">Marcar como lograda</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════ -->
+<div id="view-quiz" class="view">
+  <div class="quiz-layout">
+    <div class="quiz-header">
+      <div class="quiz-meta">
+        <span class="quiz-step" id="quiz-step">Pregunta 1 de 12</span>
+        <span class="quiz-step" id="quiz-time">aprox. 3 min</span>
+      </div>
+      <div class="progress"><div class="progress-fill" id="quiz-progress" style="width:8%"></div></div>
+    </div>
+    <div id="quiz-question-container"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-ghost" id="quiz-prev" onclick="quizPrev()" style="visibility:hidden">← Anterior</button>
+      <button class="btn btn-primary" id="quiz-next" onclick="quizNext()">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     RESULTS
+═══════════════════════════════════════ -->
+<div id="view-results" class="view">
+  <div class="results-layout">
+    <div class="results-hero">
+      <div class="results-score" id="result-score">72</div>
+      <p class="results-score-lbl">Puntuación de consumo consciente</p>
+      <h2 class="results-title" id="result-title">Consumidor en Transición</h2>
+      <p class="results-desc" id="result-desc">Tienes buenos instintos pero aún hay áreas de mejora.</p>
+    </div>
+    <div class="results-grid">
+      <div class="card"><div class="card-header">Análisis por Categoría</div><div class="card-body"><div id="result-bars"></div></div></div>
+      <div class="card"><div class="card-header">Tus Fortalezas</div><div class="card-body"><div id="result-strengths"></div></div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px"><div class="card-header">Próximos pasos recomendados</div><div class="card-body"><div id="result-steps" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
+    <div class="results-actions">
+      <button class="btn btn-primary" onclick="showView('guide')">Ver alternativas</button>
+      <button class="btn btn-outline" onclick="showView('quiz');initQuiz()">Repetir evaluación</button>
+      <button class="btn btn-ghost" onclick="showView('dashboard')">Volver al panel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GUIDE — ALTERNATIVAS
+═══════════════════════════════════════ -->
+<div id="view-guide" class="view">
+  <div class="guide-layout">
+    <div class="guide-hero">
+      <h1>Alternativas Conscientes<br/>al Fast Fashion Digital</h1>
+      <p>Cada compra es una decisión. Aquí encontrarás marcas verificadas, plataformas de segunda mano y recursos que alinean tu consumo con tus valores.</p>
+    </div>
+    <div class="cat-tabs" id="guide-tabs">
+      <button class="cat-tab active" data-cat="all">Todo</button>
+      <button class="cat-tab" data-cat="ropa">Ropa</button>
+      <button class="cat-tab" data-cat="calzado">Calzado</button>
+      <button class="cat-tab" data-cat="segunda">Segunda mano</button>
+      <button class="cat-tab" data-cat="cosmetica">Cosmética</button>
+      <button class="cat-tab" data-cat="hogar">Hogar</button>
+      <button class="cat-tab" data-cat="tech">Tecnología</button>
+    </div>
+    <!-- Alt. consumption cards -->
+    <div class="alt-types-row">
+      <div class="alt-type-card">
+        <div class="alt-type-icon"><svg width="26" height="26"><use href="#icon-swap"/></svg></div>
+        <div class="alt-type-name">Intercambio</div>
+        <div class="alt-type-desc">Cambia prendas con tu comunidad sin gastar dinero.</div>
+      </div>
+      <div class="alt-type-card">
+        <div class="alt-type-icon"><svg width="26" height="26"><use href="#icon-tag"/></svg></div>
+        <div class="alt-type-name">Segunda Mano</div>
+        <div class="alt-type-desc">Adquiere artículos con historia y menor huella.</div>
+      </div>
+      <div class="alt-type-card">
+        <div class="alt-type-icon"><svg width="26" height="26"><use href="#icon-repair"/></svg></div>
+        <div class="alt-type-name">Reparación</div>
+        <div class="alt-type-desc">Extiende la vida útil de lo que ya posees.</div>
+      </div>
+      <div class="alt-type-card">
+        <div class="alt-type-icon"><svg width="26" height="26"><use href="#icon-library"/></svg></div>
+        <div class="alt-type-name">Préstamo</div>
+        <div class="alt-type-desc">Bibliotecas de objetos y ropa para uso temporal.</div>
+      </div>
+    </div>
+    <div class="brands-grid" id="brands-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PROGRESO E IA (nueva sección unificada)
+═══════════════════════════════════════ -->
+<div id="view-progress" class="view">
+  <div class="page-hero">
+    <h1>Progreso e IA</h1>
+    <p>Analiza tu evolución y conversa con tu asistente de consumo consciente.</p>
+  </div>
+  <div class="progress-layout">
+    <div class="progress-grid">
+
+      <!-- IA DE PROGRESO -->
+      <div class="progress-panel">
+        <div class="progress-panel-header">
+          <svg width="20" height="20"><use href="#icon-chart"/></svg>
+          <div>
+            <div class="progress-panel-title">IA de Progreso</div>
+            <div class="progress-panel-sub">Diagnóstico algorítmico automatizado</div>
+          </div>
+        </div>
+
+        <div class="consciousness-index">
+          <div class="ci-label">Índice de Conciencia de Consumo</div>
+          <div class="ci-value" id="ci-value">—</div>
+          <div class="ci-desc" id="ci-desc">Completa el quiz o registra compras para generar tu índice.</div>
+          <div class="ci-bar-track">
+            <div class="ci-bar-fill" id="ci-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="ai-metrics">
+          <div class="ai-metric-row">
+            <span class="ai-metric-label">Compras necesarias</span>
+            <div class="ai-metric-bar-wrap">
+              <div class="ai-metric-bar" id="bar-necesaria" style="width:0%"></div>
+            </div>
+            <span class="ai-metric-pct" id="pct-necesaria">0%</span>
+          </div>
+          <div class="ai-metric-row">
+            <span class="ai-metric-label">Compras planeadas</span>
+            <div class="ai-metric-bar-wrap">
+              <div class="ai-metric-bar ai-metric-bar--plan" id="bar-planeada" style="width:0%"></div>
+            </div>
+            <span class="ai-metric-pct" id="pct-planeada">0%</span>
+          </div>
+          <div class="ai-metric-row">
+            <span class="ai-metric-label">Compras impulsivas</span>
+            <div class="ai-metric-bar-wrap">
+              <div class="ai-metric-bar ai-metric-bar--imp" id="bar-impulsiva" style="width:0%"></div>
+            </div>
+            <span class="ai-metric-pct" id="pct-impulsiva">0%</span>
+          </div>
+        </div>
+
+        <div class="ai-diagnosis" id="ai-diagnosis">
+          <div class="ai-diag-eyebrow">Diagnóstico IA</div>
+          <p class="ai-diag-text" id="ai-diag-text">Aún no hay datos suficientes. Registra compras o completa el quiz para generar tu diagnóstico personalizado.</p>
+        </div>
+      </div>
+
+      <!-- IA DE APOYO — CHATBOX -->
+      <div class="progress-panel chat-panel">
+        <div class="progress-panel-header">
+          <svg width="20" height="20"><use href="#icon-chat"/></svg>
+          <div>
+            <div class="progress-panel-title">IA de Apoyo</div>
+            <div class="progress-panel-sub">Asistente anticlímax de consumo</div>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg chat-msg--ai">
+            <div class="chat-bubble">Hola. Soy tu asistente de consumo consciente. Cuéntame qué quieres comprar y te ayudaré a reflexionar antes de hacerlo.</div>
+          </div>
+        </div>
+
+        <div class="chat-input-wrap">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Ej: Quiero comprar unos tenis nuevos…"/>
+          <button class="chat-send-btn" id="chat-send">
+            <svg width="16" height="16"><use href="#icon-send"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CONCIENTIZACIÓN
+═══════════════════════════════════════ -->
+<div id="view-awareness" class="view">
+  <div class="page-hero">
+    <h1>Concientización</h1>
+    <p>Edúcate sobre el impacto real del hiperconsumismo y la moda rápida.</p>
+  </div>
+  <div class="awareness-layout">
+
+    <div class="awareness-intro">
+      <p class="sec-eyebrow">Por qué importa</p>
+      <h2 class="sec-title">El costo invisible de lo que compramos</h2>
+      <p class="awareness-body">Cada año se producen más de 100 mil millones de prendas de ropa. Menos del 1% se recicla. El fast fashion es el segundo sector más contaminante del planeta después del petróleo. Lo que usamos durante meses deja una huella que dura siglos.</p>
+    </div>
+
+    <!-- VIDEO LIBRARY -->
+    <div class="videoteca">
+      <p class="sec-eyebrow" style="margin-bottom:8px">Videoteca</p>
+      <h3 class="sec-title" style="margin-bottom:20px">Documentales y recursos audiovisuales</h3>
+
+      <div class="video-library-grid">
+
+        <div class="vlib-card">
+          <div class="vlib-embed">
+            <iframe src="https://www.youtube.com/embed/tEp5OPUfOec" title="The True Cost — Fast Fashion Documentary" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="vlib-info">
+            <div class="vlib-tag">Documental</div>
+            <h4 class="vlib-title">The True Cost</h4>
+            <p class="vlib-desc">El costo humano y ambiental real de la industria de moda rápida global.</p>
+          </div>
+        </div>
+
+        <div class="vlib-card">
+          <div class="vlib-embed">
+            <iframe src="https://www.youtube.com/embed/GJ3OcAi1vDE" title="Minimalism Documentary" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="vlib-info">
+            <div class="vlib-tag">Minimalismo</div>
+            <h4 class="vlib-title">Minimalism: A Documentary</h4>
+            <p class="vlib-desc">Cómo vivir con más significado y menos objetos en la era del hiperconsumo.</p>
+          </div>
+        </div>
+
+        <div class="vlib-card">
+          <div class="vlib-embed">
+            <iframe src="https://www.youtube.com/embed/bi0mw7caDV4" title="Stacey Dooley Investigates Fashion Waste" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="vlib-info">
+            <div class="vlib-tag">Investigación</div>
+            <h4 class="vlib-title">Fashion Waste Investigation</h4>
+            <p class="vlib-desc">Una investigación sobre los vertederos de ropa fast fashion en el desierto de Atacama.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STATS STRIP -->
+    <div class="awareness-stats">
+      <div class="astat">
+        <div class="astat-val">92 M</div>
+        <div class="astat-label">toneladas de residuos textiles generadas cada año</div>
+      </div>
+      <div class="astat">
+        <div class="astat-val">700 L</div>
+        <div class="astat-label">de agua se necesitan para producir una sola camiseta de algodón</div>
+      </div>
+      <div class="astat">
+        <div class="astat-val">10%</div>
+        <div class="astat-label">de las emisiones mundiales de CO₂ provienen del fast fashion</div>
+      </div>
+      <div class="astat">
+        <div class="astat-val">200</div>
+        <div class="astat-label">años tarda el poliéster en degradarse en un relleno sanitario</div>
+      </div>
+    </div>
+
+    <!-- TIPS -->
+    <div class="awareness-tips">
+      <p class="sec-eyebrow" style="margin-bottom:8px">Qué puedes hacer hoy</p>
+      <h3 class="sec-title" style="margin-bottom:20px">Acciones concretas de impacto</h3>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-icon"><svg width="22" height="22"><use href="#icon-clock"/></svg></div>
+          <h4 class="tip-title">Regla de las 72 horas</h4>
+          <p class="tip-desc">Antes de cualquier compra no esencial, espera tres días. Estadísticamente, el 64% de los impulsos desaparecen.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon"><svg width="22" height="22"><use href="#icon-swap"/></svg></div>
+          <h4 class="tip-title">Primero el intercambio</h4>
+          <p class="tip-desc">Antes de comprar nuevo, revisa si alguien en tu comunidad tiene lo que necesitas o si puedes hacer un intercambio.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon"><svg width="22" height="22"><use href="#icon-repair"/></svg></div>
+          <h4 class="tip-title">Repara antes de desechar</h4>
+          <p class="tip-desc">Un sastre, un técnico o un tutorial de YouTube pueden extender la vida de tus objetos por años más.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon"><svg width="22" height="22"><use href="#icon-target"/></svg></div>
+          <h4 class="tip-title">Compra con propósito</h4>
+          <p class="tip-desc">Define antes de salir exactamente qué necesitas, tu presupuesto máximo y la cantidad exacta. No improvises.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     QUIÉNES SOMOS
+═══════════════════════════════════════ -->
+<div id="view-about" class="view">
+  <div class="whoami-layout">
+
+    <div class="whoami-logo-wrap">
+      <img src="mindbuy-logo.png" alt="MindBuy" class="whoami-logo"
+        onerror="this.outerHTML='<div class=whoami-logo-fallback>MindBuy</div>'"/>
+      <div class="whoami-wordmark">MindBuy</div>
+      <div class="whoami-sub">Consumo Consciente</div>
+    </div>
+
+    <div class="whoami-manifesto">
+      <p class="sec-eyebrow" style="text-align:center;margin-bottom:12px">Manifiesto fundacional</p>
+      <h1 class="whoami-headline">Creemos que comprar menos<br/>es vivir más.</h1>
+      <div class="whoami-body">
+        <p>MindBuy nació de una incomodidad honesta: vivimos en un sistema diseñado para que compremos más de lo que necesitamos, más rápido de lo que podemos evaluar, y con menos culpa de la que merecería sentirse.</p>
+        <p>Las plataformas de fast fashion optimizan cada píxel para desactivar tu juicio crítico. Los algoritmos aprenden tus inseguridades. Los precios artificialmente bajos esconden costos que paga alguien más: un trabajador en condiciones precarias, un río contaminado, un vertedero que se extiende por kilómetros.</p>
+        <p>No somos anticonsumo. Somos pro-intención. Hay una diferencia enorme entre comprar algo que genuinamente necesitas, que durará años y que fue producido con respeto, y comprar algo para llenar un vacío emocional que se sentirá vacío de nuevo mañana.</p>
+        <p>MindBuy existe para darte herramientas: un momento de pausa, un espejo de tus hábitos, un mapa hacia alternativas mejores. Nada más, nada menos.</p>
+      </div>
+    </div>
+
+    <div class="whoami-values">
+      <div class="value-card">
+        <div class="value-icon"><svg width="24" height="24"><use href="#icon-clock"/></svg></div>
+        <h3 class="value-title">Pausa</h3>
+        <p class="value-desc">La reflexión es el primer acto de consumo consciente. Construimos fricción útil en el camino de compra.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg width="24" height="24"><use href="#icon-chart"/></svg></div>
+        <h3 class="value-title">Claridad</h3>
+        <p class="value-desc">Mostramos el impacto real de cada decisión: carbono, agua, condiciones laborales.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg width="24" height="24"><use href="#icon-leaf"/></svg></div>
+        <h3 class="value-title">Alternativa</h3>
+        <p class="value-desc">Siempre hay otra opción. Nuestra misión es encontrarla contigo antes de que compres por impulso.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon"><svg width="24" height="24"><use href="#icon-globe"/></svg></div>
+        <h3 class="value-title">Comunidad</h3>
+        <p class="value-desc">El consumo consciente es más poderoso cuando es colectivo. Cada decisión tuya inspira a alguien más.</p>
+      </div>
+    </div>
+
+    <div class="whoami-team">
+      <p class="sec-eyebrow" style="text-align:center;margin-bottom:6px">El proyecto</p>
+      <p class="whoami-team-text">MindBuy es una plataforma educativa creada como proyecto de concienciación sobre el consumo responsable. Fue diseñada con la convicción de que la tecnología puede y debe ponerse al servicio de la reflexión, no sólo de la impulsividad.</p>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
